@@ -6,6 +6,8 @@
 #include <boost/dll.hpp>
 
 #include <libethcore/Farm.h>
+#include "CLMiner.h"
+#include "CLMiner_kernel.h"
 #include <ethash/ethash.hpp>
 
 #include "CLMiner.h"
@@ -736,19 +738,22 @@ bool CLMiner::initEpoch_internal()
 
 
         m_dagItems = m_epochContext.dagNumItems;
+        uint32_t dagWords = (unsigned)(dagSize / ETHASH_MIX_BYTES);
 
         // patch source code
         // note: The kernels here are simply compiled version of the respective .cl kernels
         // into a byte array by bin2h.cmake. There is no need to load the file by hand in runtime
         // See libethash-cl/CMakeLists.txt: add_custom_command()
         // TODO: Just use C++ raw string literal.
-        string code;
 
-        cllog << "OpenCL kernel";
-        code = string(ethash_cl, ethash_cl + sizeof(ethash_cl));
+        std::string code = ProgPow::getKern(light->light->block_number, ProgPow::KERNEL_CL);
+        code += string(CLMiner_kernel, sizeof(CLMiner_kernel));
 
         addDefinition(code, "WORKSIZE", m_workgroupSize);
-        addDefinition(code, "ACCESSES", 64);
+        addDefinition(code, "GROUP_SIZE", m_workgroupSize);
+        addDefinition(code, "LIGHT_WORDS", lightWords);
+        addDefinition(code, "PROGPOW_DAG_BYTES", dagSize);
+        addDefinition(code, "PROGPOW_DAG_WORDS", dagWords);
         addDefinition(code, "MAX_OUTPUTS", c_maxSearchResults);
         addDefinition(code, "PLATFORM", m_deviceDescriptor.clPlatformId);
         addDefinition(code, "COMPUTE", computeCapability);
