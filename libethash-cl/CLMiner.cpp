@@ -739,6 +739,10 @@ bool CLMiner::initEpoch_internal()
 
         m_dagItems = m_epochContext.dagNumItems;
         uint32_t dagWords = (unsigned)(dagSize / ETHASH_MIX_BYTES);
+        const auto lightNumItems = context.light_cache_num_items;
+        const auto lightSize = ethash::get_light_cache_size(lightNumItems);
+        const auto lightWords = ethash::get_light_cache_num_items(context);
+        const auto lightRef = ethash::managed::get_light_cache_data(epoch);
 
         // patch source code
         // note: The kernels here are simply compiled version of the respective .cl kernels
@@ -753,7 +757,7 @@ bool CLMiner::initEpoch_internal()
         addDefinition(code, "GROUP_SIZE", m_workgroupSize);
         addDefinition(code, "LIGHT_WORDS", lightWords);
         addDefinition(code, "PROGPOW_DAG_BYTES", dagSize);
-        addDefinition(code, "PROGPOW_DAG_WORDS", dagWords);
+        addDefinition(code, "PROGPOW_DAG_ELEMENTS", m_dagItems);
         addDefinition(code, "MAX_OUTPUTS", c_maxSearchResults);
         addDefinition(code, "PLATFORM", m_deviceDescriptor.clPlatformId);
         addDefinition(code, "COMPUTE", computeCapability);
@@ -886,6 +890,7 @@ bool CLMiner::initEpoch_internal()
         m_searchKernel.setArg(1, m_header[0]);
         m_searchKernel.setArg(2, m_dag[0]);
         m_searchKernel.setArg(3, m_dagItems);
+        m_searchKernel.setArg(5, 0);
         m_searchKernel.setArg(6, ~0u);
 
         // create mining buffers

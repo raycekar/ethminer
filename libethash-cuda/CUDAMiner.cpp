@@ -344,7 +344,7 @@ void CUDAMiner::configureGPU(unsigned _blockSize, unsigned _gridSize, unsigned _
 
 void CUDAMiner::compileKernel(
     uint64_t block_number,
-    uint64_t dag_words)
+    uint64_t dag_elms)
 {
     const char* name = "progpow_search";
 
@@ -370,7 +370,7 @@ void CUDAMiner::compileKernel(
     cudaDeviceProp device_props;
     CUDA_SAFE_CALL(cudaGetDeviceProperties(&device_props, m_deviceDescriptor.cuDeviceIndex));
     std::string op_arch = "--gpu-architecture=compute_" + to_string(device_props.major) + to_string(device_props.minor);
-    std::string op_dag = "-DPROGPOW_DAG_WORDS=" + to_string(dag_words);
+    std::string op_dag = "-DPROGPOW_DAG_ELEMENTS=" + to_string(dag_elms);
 
     const char *opts[] = {
         op_arch.c_str(),
@@ -453,7 +453,8 @@ void CUDAMiner::search(
         buffer.count = 0;
 
         // Run the batch for this stream
-        void *args[] = {&start_nonce, &current_header, &m_current_target, &m_dag, &buffer};
+        bool hack_false = false;
+        void *args[] = {&start_nonce, &current_header, &m_current_target, &m_dag, &buffer, &hack_false};
         CU_SAFE_CALL(cuLaunchKernel(m_kernel,
             s_gridSize, 1, 1,   // grid dim
             s_blockSize, 1, 1,  // block dim
@@ -524,7 +525,8 @@ void CUDAMiner::search(
             // unless we are done for this round.
             if (!done)
             {
-                void *args[] = {&start_nonce, &current_header, &m_current_target, &m_dag, &buffer};
+                bool hack_false = false;
+                void *args[] = {&start_nonce, &current_header, &m_current_target, &m_dag, &buffer, &hack_false};
                 CU_SAFE_CALL(cuLaunchKernel(m_kernel,
                     s_gridSize, 1, 1,   // grid dim
                     s_blockSize, 1, 1,  // block dim
