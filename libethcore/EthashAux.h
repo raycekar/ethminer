@@ -66,6 +66,7 @@ struct WorkPackage
 
     uint64_t startNonce = 0;
     uint16_t exSizeBytes = 0;
+    uint64_t height = 0;
 };
 
 struct Solution
