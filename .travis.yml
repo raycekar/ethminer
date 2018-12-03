@@ -11,6 +11,7 @@ branches:
         - hunter
         - coverity
         - /^release.*$/
+        - /^travis-.*$/
 matrix:
     include:
         - os: linux
