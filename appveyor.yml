@@ -3,6 +3,7 @@ branches:
   only:
     - master
     - /v\d+\..+/
+    - /travis-.*/
     - /release.*/
     - appveyor
     - hunter
