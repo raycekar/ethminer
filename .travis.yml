@@ -74,7 +74,7 @@ before_install:
 script: |
     cmake -DHUNTER_JOBS_NUMBER=4 -DETHASHCUDA=$CUDA -DETHASHCL=ON -DAPICORE=ON -H. -Bbuild
     cmake --build build --target package -- -j4
-    build/ethminer/ethminer --help
+    #build/ethminer/ethminer --help
     if [ "$TRAVIS_OS_NAME" = linux ]; then ldd -v build/ethminer/ethminer; fi
     if [ "$TRAVIS_OS_NAME" = osx ]; then otool -L build/ethminer/ethminer; fi
     . build/ethminer/buildinfo.sh
