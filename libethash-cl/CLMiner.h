@@ -51,7 +51,7 @@ public:
     static const unsigned c_defaultGlobalWorkSizeMultiplier = 2048;
 
     /// Default value of the kernel is the original one
-    static const CLKernelName c_defaultKernelName = CLKernelName::Stable;
+    //static const CLKernelName c_defaultKernelName = CLKernelName::Stable;
 
     CLMiner(unsigned _index);
     ~CLMiner() override;
@@ -64,7 +64,7 @@ public:
 protected:
     bool initDevice() override;
 
-    bool initEpoch_internal() override;
+    bool initEpoch_internal(uint64_t) override;
 
     void kick_miner() override;
 
