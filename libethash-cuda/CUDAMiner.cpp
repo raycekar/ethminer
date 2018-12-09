@@ -16,13 +16,12 @@ along with ethminer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <libethcore/Farm.h>
-#include "CUDAMiner.h"
-#include "CUDAMiner_kernel.h"
-#include <nvrtc.h>
 
 #include <ethash/ethash.hpp>
 
 #include "CUDAMiner.h"
+#include "CUDAMiner_kernel.h"
+#include <nvrtc.h>
 
 using namespace std;
 using namespace dev;
