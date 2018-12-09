@@ -11,7 +11,6 @@
 #include <ethash/ethash.hpp>
 
 #include "CLMiner.h"
-#include "ethash.h"
 #include <iostream>
 #include <fstream>
 
@@ -349,7 +348,7 @@ void CLMiner::workLoop()
                 {
                     m_abortqueue.clear();
 
-                    if (!initEpoch())
+                    if (!initEpoch(w.height))
                         break;  // This will simply exit the thread
 
                     m_abortqueue.push_back(cl::CommandQueue(m_context[0], m_device));
@@ -676,7 +675,7 @@ bool CLMiner::initDevice()
 
 }
 
-bool CLMiner::initEpoch_internal()
+bool CLMiner::initEpoch_internal(uint64_t block_number)
 {
     auto startInit = std::chrono::steady_clock::now();
     size_t RequiredMemory = (m_epochContext.dagSize + m_epochContext.lightSize);
@@ -731,7 +730,7 @@ bool CLMiner::initEpoch_internal()
         // See libethash-cl/CMakeLists.txt: add_custom_command()
         // TODO: Just use C++ raw string literal.
 
-        std::string code = ProgPow::getKern(light->light->block_number, ProgPow::KERNEL_CL);
+        std::string code = ProgPow::getKern(block_number, ProgPow::KERNEL_CL);
         code += string(CLMiner_kernel, sizeof(CLMiner_kernel));
 
         addDefinition(code, "WORKSIZE", m_settings.localWorkSize);
