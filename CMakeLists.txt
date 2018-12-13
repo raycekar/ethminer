@@ -59,8 +59,8 @@ find_package(Boost CONFIG REQUIRED COMPONENTS system filesystem thread)
 hunter_add_package(jsoncpp)
 find_package(jsoncpp CONFIG REQUIRED)
 
-hunter_add_package(ethash)
-find_package(ethash CONFIG REQUIRED)
+#hunter_add_package(ethash)
+#find_package(ethash CONFIG REQUIRED)
 
 configureProject()
 
@@ -82,6 +82,7 @@ if(UNIX AND NOT APPLE)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libstdc++")
 endif()
 
+include(ProjectEthash)
 
 cable_add_buildinfo_library(PROJECT_NAME ${PROJECT_NAME})
 
