@@ -52,8 +52,13 @@ std::string ProgPow::getKern(uint64_t prog_seed, kernel_t kern)
     {
         ret << "typedef unsigned int       uint32_t;\n";
         ret << "typedef unsigned long long uint64_t;\n";
+        ret << "#if __CUDA_ARCH__ < 320\n";
+        ret << "#define ROTR32(x,n) (((x) >> (n)) | ((x) << (32 - (n))))\n";
+        ret << "#define ROTL32(x,n) (((x) << (n)) | ((x) >> (32 - (n))))\n";
+        ret << "#else\n";
         ret << "#define ROTL32(x,n) __funnelshift_l((x), (x), (n))\n";
         ret << "#define ROTR32(x,n) __funnelshift_r((x), (x), (n))\n";
+        ret << "#endif\n";
         ret << "#define min(a,b) ((a<b) ? a : b)\n";
         ret << "#define mul_hi(a, b) __umulhi(a, b)\n";
         ret << "#define clz(a) __clz(a)\n";
