@@ -18,7 +18,9 @@
 #include "EthashAux.h"
 
 #include <ethash/ethash.hpp>
+#if __GNUC__ == 5
 struct search_result;
+#endif
 #include <ethash/progpow.hpp>
 
 using namespace dev;
