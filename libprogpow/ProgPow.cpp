@@ -82,8 +82,10 @@ std::string ProgPow::getKern(uint64_t prog_seed, kernel_t kern)
         ret << "\n";
         ret << "typedef unsigned int       uint32_t;\n";
         ret << "typedef unsigned long      uint64_t;\n";
-        ret << "#define ROTL32(x, n) rotate((x), (uint32_t)(n))\n";
-        ret << "#define ROTR32(x, n) rotate((x), (uint32_t)(32-n))\n";
+        ret << "//#define ROTL32(x, n) rotate((x), (uint32_t)(n))\n";
+        ret << "//#define ROTR32(x, n) rotate((x), (uint32_t)(32-n))\n";
+        ret << "#define ROTL32(x,n) (((x) << (n % 32)) | ((x) >> (32 - (n % 32))))\n";
+        ret << "#define ROTR32(x,n) (((x) >> (n % 32)) | ((x) << (32 - (n % 32))))\n";
         ret << "\n";
 	}
 
