@@ -213,7 +213,9 @@ __kernel void ethash_search(
         // initialize mix for all lanes
         fill_mix(hash_seed, lane_id, mix);
 
-        #pragma unroll 1
+        // For whatever reason prevent unrolling this loop causes
+        // bogus periods on AMD OpenCL. Use any unroll factor greater than 1
+        #pragma unroll 2
         for (uint32_t l = 0; l < PROGPOW_CNT_DAG; l++)
             progPowLoop(l, mix, g_dag, c_dag, share[0].uint64s, hack_false);
 
