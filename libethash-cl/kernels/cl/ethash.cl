@@ -436,23 +436,28 @@ static void SHA3_512(uint2 *s)
 __kernel void GenerateDAG(uint start, __global const uint16 *_Cache, __global uint16 *_DAG0, __global uint16 *_DAG1, uint light_size)
 {
     __global const Node *Cache = (__global const Node *) _Cache;
-    uint NodeIdx = start + get_global_id(0);
+    const uint gid = get_global_id(0);
+    const uint thread_id = gid & 3;
+    const uint hash_id = gid / 4;
+    uint NodeIdx = start + hash_id;
+
+    __local Node sharebuf[WORKSIZE / 4];
+    __local Node *dagNode = sharebuf + get_local_id(0) / 4;
 
     Node DAGNode = Cache[NodeIdx % light_size];
 
     DAGNode.dwords[0] ^= NodeIdx;
     SHA3_512(DAGNode.qwords);
 
+    *dagNode = DAGNode;
     for (uint i = 0; i < 256; ++i) {
-        uint ParentIdx = fnv(NodeIdx ^ i, DAGNode.dwords[i & 15]) % light_size;
+        uint ParentIdx = fnv(NodeIdx ^ i, dagNode->dwords[i & 15]) % light_size;
         __global const Node *ParentNode = Cache + ParentIdx;
 
-#pragma unroll
-        for (uint x = 0; x < 4; ++x) {
-                DAGNode.dqwords[x] *= (uint4)(FNV_PRIME);
-                DAGNode.dqwords[x] ^= ParentNode->dqwords[x];
-        }
+        dagNode->dqwords[thread_id] = fnv(dagNode->dqwords[thread_id], ParentNode->dqwords[thread_id]);
+        barrier(CLK_LOCAL_MEM_FENCE);
     }
+    DAGNode = *dagNode;
 
     SHA3_512(DAGNode.qwords);
 

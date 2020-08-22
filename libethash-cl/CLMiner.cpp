@@ -953,7 +953,7 @@ bool CLMiner::initEpoch_internal()
         {
             m_dagKernel.setArg(0, start);
             m_queue[0].enqueueNDRangeKernel(
-                m_dagKernel, cl::NullRange, chunk, m_settings.localWorkSize);
+                m_dagKernel, cl::NullRange, chunk * 4, m_settings.localWorkSize);
             m_queue[0].finish();
         }
         if (start < workItems)
@@ -962,7 +962,7 @@ bool CLMiner::initEpoch_internal()
             groupsLeft = (groupsLeft + m_settings.localWorkSize - 1) / m_settings.localWorkSize;
             m_dagKernel.setArg(0, start);
             m_queue[0].enqueueNDRangeKernel(m_dagKernel, cl::NullRange,
-                groupsLeft * m_settings.localWorkSize, m_settings.localWorkSize);
+                groupsLeft * m_settings.localWorkSize * 4, m_settings.localWorkSize);
             m_queue[0].finish();
         }
 
