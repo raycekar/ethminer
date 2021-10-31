@@ -1,4 +1,4 @@
-# ethminer
+# ethminer  -- Travis CI Builder
 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)][Gitter]
